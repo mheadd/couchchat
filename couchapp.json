@@ -1,0 +1,4 @@
+{
+    "name": "CouchChat",
+    "description": "A realtime chat server for CouchDB"
+}

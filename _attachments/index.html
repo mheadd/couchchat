@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CouchChat: Realtime Chat with jQuery and CouchDB</title>
+    <link rel="stylesheet" href="style/main.css" type="text/css">
+  </head>
+  <body>
+    <h1>Welcome to CouchChat!</h1>
+    <img src="images/couchdb-logo.png" alt="CouchDB Logo" title="CouchDB Logo"/>
+    <div id="sign-in">
+      <input id="name" type="text" value="Enter your name"/>&nbsp;&nbsp;<input id="signin" type="submit" value="Sign in"/>
+    </div>
+    <div>
+      <p>View past messages: <a href="#">10</a> ||  <a href="#">25</a> || <a href="#">50</a></p>
+      <fieldset id="items"></fieldset>
+      <div id="send-message">
+        <input id="message" type="text"/>&nbsp;&nbsp;<input id="send" type="submit" value="Send message"/>  
+      </div>
+    </div>
+  </body>
+  <script src="vendor/couchapp/loader.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    
+    // Variable to hold the name of the user after log in.
+    var name;
+    
+    // Variable to hold the channel selected by the user.
+    var channel;
+    
+    /**
+     * Function to get all new documents from the changes API on a specified channel.
+     * @param db
+     * @param channel
+     */
+    function getChanges(db, channel) {
+      db.changes(null, {filter: "couchchat/new", channel: channel, include_docs: true}).onChange(function (data) {
+        for(var i=0; i<data.results.length; i++) {
+        var class = data.results[i].doc.name == name ? "self" : "other";
+          $("#items").append("<p class=\"" + class + "\">" + data.results[i].doc.name + ": " + data.results[i].doc.message + "</p>"); 
+        }
+      });
+    }
+    
+    /**
+     * Function to get past chat messages on a specified channel.
+     * @param db
+     * @param channel
+     * @param number
+     */
+    function getPastChats(db, channel, number) {
+      db.list("couchchat/pastchats", "messages", {
+            success: function(data) {
+              $("#items").find("p").remove();
+              for(var i=0; i<data.length; i++) {
+                var class = data[i].name == name ? "self" : "other";
+                $("#items").append("<p class=\"" + class + "\">" + data[i].name + ": " + data[i].message + "</p>"); 
+              }
+            },
+            channel: channel,
+            number: number
+      });
+    }
+    
+    /**
+     * Function to set a channel name.
+     */
+    function setChannel() {
+      if(jQuery.url.param("channel")) {
+        channel = jQuery.url.param("channel");
+      }
+      else {
+        channel = "foo";
+      }
+      $("#items").append("<legend>" + channel + " channel</legned>");
+    }
+    
+    /**
+     * Funtion to set the user's name.
+     * @param userName
+     */
+    function setName(userName) {
+      name = userName;
+    }
+  
+    $.couch.app(function(app) {
+      
+      // Set the database to use.
+      var db = $.couch.db("couchchat");
+      
+      // Disable elements prior to login.
+      $("#send").attr("disabled", true).val("Send message");
+      $("a").removeAttr("href");
+      
+      // Empty name input when cursor hits it.
+      $("#name").focus(function() {
+    		$("#name").val("");
+      });
+       
+      // Handle user sign in.
+      $("#signin").click(function() {
+          if($("#name").val().length > 0) {
+            name = $("#name").val();
+            $("#sign-in").remove();
+            $("#send").attr("disabled", false).val("Send message");
+            $("a").attr("href", "#");
+            setChannel();
+            $("#items").addClass("items");
+            getPastChats(db, channel, 10);
+            getChanges(db, channel);
+          }
+          else {
+            alert("You must enter a name.");
+          }
+      });
+      
+      // Send a message on the current channel.
+      $("#send").click(function() {
+       var message = $("#message").val();
+         if(message.length > 0) {
+           var doc = {channel: channel, message: message, name: name};
+            db.saveDoc(doc, {
+                success: function(data) {
+                    $("#message").val("");
+                },
+                error: function(status) {
+                    alert('Sorry, could not send your message.');
+                }
+            });
+         }
+      });
+      
+      // Display past messages on the current channel.
+      $("a").click(function() {
+        var number = $(this).text();
+        getPastChats(db, channel, number);
+        return false;
+      });
+      
+    });
+
+  </script>
+  <script type="text/javascript" src="scripts/jquery.url.js"/>
+  <script type="text/javascript" src="/_utils/script/jquery.couch.js"></script>
+</html>

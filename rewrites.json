@@ -1,0 +1,48 @@
+[
+{
+  "from": "",
+  "to": "index.html"
+},
+{
+  "from": "/?channel=*",
+  "to": "index.html/?channel=*"
+},
+
+{
+  "from": "vendor/*",
+  "to": "vendor/*"
+},
+{
+  "from": "app/*",
+  "to": "app/*"
+},
+{
+  "from": "config/*",
+  "to": "config/*"
+},
+{
+  "from": "style/*",
+  "to": "style/*"
+},
+{
+  "from": "scripts/*",
+  "to": "scripts/*"
+},
+{
+  "from": "images/*",
+  "to": "images/*"
+},
+
+{
+  "from": "_view/*",
+  "to": "_view/*"
+},
+{
+  "from":"couchchat/*",
+  "to":"../../../couchchat/*"
+},
+{
+  "from":"couchchat",
+  "to":"../../../couchchat"
+}
+]

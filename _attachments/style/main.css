@@ -1,0 +1,64 @@
+/* add styles here */
+
+body {
+  width:60%;
+  text-align: center;
+  padding:15px; 
+}
+
+img {
+  background: #999;
+  padding: 5px;
+  margin-bottom:10px;
+}
+
+h1 {
+  margin-top:10px;
+}
+
+fieldset { 
+  border:0px 
+}
+
+legend {
+  padding: 3px;;
+  border: 1px solid black;
+  color: black;
+  font-size: 110%;
+  font-weight: bold;
+  text-align: right;
+  }
+  
+p {
+  padding: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+p.other {
+  padding: 5px;
+  background: #666;
+  color: #FFFFFF;
+  text-align: left;
+}
+
+p.self {
+  padding: 5px;
+  background: #CCC;
+  font-style: italic;
+  text-align: left;
+}
+
+.items {
+  border:1px solid black;
+}
+
+#message {
+  width:300px; 
+}
+
+#send-message { 
+  margin-top:10px;
+}
+
+
